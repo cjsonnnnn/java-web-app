@@ -1,18 +1,20 @@
-FROM adoptopenjdk/openjdk11:alpine-slim as build
-WORKDIR /workspace/app
+# Use official OpenJDK image
+FROM openjdk:11-jdk-slim
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
+# Set working directory
+WORKDIR /app
 
-RUN ./mvnw install -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+# Copy source code
+COPY . .
 
-FROM adoptopenjdk/openjdk11:alpine-slim
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-Dserver.port=${PORT}","-cp","app:app/lib/*","com.example.demo.DemoApplication"]
+# Build the application using Maven
+RUN apt-get update && apt-get install -y maven && \
+    mvn clean package && \
+    mv target/*.jar app.jar && \
+    apt-get remove -y maven && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
+# Expose the application port
+EXPOSE 8080
+
+# Run the application
+CMD ["java", "-jar", "app.jar"]

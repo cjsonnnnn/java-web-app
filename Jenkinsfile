@@ -4,25 +4,41 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
-    CI = true
-    ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
+    HEROKU_API_KEY = credentials('darinpope-heroku-api-key')
+  }
+  parameters { 
+    string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
   }
   stages {
     stage('Build') {
       steps {
-        sh './mvnw clean install'
+        sh 'docker build -t darinpope/java-web-app:latest .'
       }
     }
-    stage('Upload to Artifactory') {
-      agent {
-        docker {
-          image 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0' 
-          reuseNode true
-        }
-      }
+    stage('Login') {
       steps {
-        sh 'jfrog rt upload --url http://192.168.1.230:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/demo-0.0.1-SNAPSHOT.jar java-web-app/'
+        sh 'echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com'
       }
+    }
+    stage('Push to Heroku registry') {
+      steps {
+        sh '''
+          docker tag darinpope/java-web-app:latest registry.heroku.com/$APP_NAME/web
+          docker push registry.heroku.com/$APP_NAME/web
+        '''
+      }
+    }
+    stage('Release the image') {
+      steps {
+        sh '''
+          heroku container:release web --app=$APP_NAME
+        '''
+      }
+    }
+  }
+  post {
+    always {
+      sh 'docker logout'
     }
   }
 }
