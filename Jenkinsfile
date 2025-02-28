@@ -10,11 +10,11 @@ pipeline {
   //   string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
   // }
   stages {
-    stage('Build') {
-      steps {
-        sh 'docker build -t jpiay/jwa:latest .'
-      }
-    }
+    // stage('Build') {
+    //   steps {
+    //     sh 'docker build -t jpiay/jwa:latest .'
+    //   }
+    // }
     stage('Login') {
       steps {
         sh 'cat /etc/passwd'
