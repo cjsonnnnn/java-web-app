@@ -1,6 +1,6 @@
 pipeline {
-  // agent { label 'agent-dind' }
-  agent { label 'built-in' }
+  agent { label 'agent-dind' }
+  // agent { label 'built-in' }
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
@@ -24,11 +24,11 @@ pipeline {
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
       }
     }
-    stage('Push') {
-      steps {
-        sh 'docker push jpiay/jwa:latest'
-      }
-    }
+    // stage('Push') {
+    //   steps {
+    //     sh 'docker push jpiay/jwa:latest'
+    //   }
+    // }
   }
   post {
     always {
