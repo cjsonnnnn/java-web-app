@@ -4,41 +4,32 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
-    HEROKU_API_KEY = credentials('darinpope-heroku-api-key')
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub-jpiay')
   }
-  parameters { 
-    string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
-  }
+  // parameters { 
+  //   string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
+  // }
   stages {
     stage('Build') {
       steps {
-        sh 'docker build -t darinpope/java-web-app:latest .'
+        sh 'docker build -t jpiay/jwa:latest .'
       }
     }
     stage('Login') {
       steps {
-        sh 'echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com'
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
       }
     }
-    stage('Push to Heroku registry') {
+    stage('Push') {
       steps {
-        sh '''
-          docker tag darinpope/java-web-app:latest registry.heroku.com/$APP_NAME/web
-          docker push registry.heroku.com/$APP_NAME/web
-        '''
-      }
-    }
-    stage('Release the image') {
-      steps {
-        sh '''
-          heroku container:release web --app=$APP_NAME
-        '''
+        sh 'docker push jpiay/jwa:latest'
       }
     }
   }
   post {
     always {
       sh 'docker logout'
+//      cleanWs()  // Deletes all files in the workspace
     }
   }
 }
