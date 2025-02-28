@@ -1,5 +1,5 @@
 pipeline {
-  agent any
+  agent { label 'agent-dind' }
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
