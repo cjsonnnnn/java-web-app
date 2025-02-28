@@ -1,5 +1,6 @@
 pipeline {
-  agent { label 'agent-dind' }
+  // agent { label 'agent-dind' }
+  agent { label 'built-in' }
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
