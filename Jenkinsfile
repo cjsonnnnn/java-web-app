@@ -1,7 +1,7 @@
-// def remote=[:]
-// remote.name = 'vm-lab1'
-// remote.host = ''
-// remote
+def remote=[:]
+remote.name = 'vm-lab1'
+remote.host = '192.168.18.21'
+remote.allowAnyHosts = true
 
 pipeline {
   agent { label 'agent-dind' }
@@ -11,6 +11,7 @@ pipeline {
   }
   environment {
     DOCKERHUB_CREDENTIALS = credentials('dockerhub-jpiay')
+    PI_CREDS=credentials('ssh-vm-lab1')
   }
   // parameters { 
   //   string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
@@ -29,7 +30,6 @@ pipeline {
         // sh 'pwd'
         // sh 'ls -al /var/jenkins_home'
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-        sh 'ping 192.168.18.21'
       }
     }
     // stage('Push') {
@@ -37,10 +37,21 @@ pipeline {
     //     sh 'docker push jpiay/jwa:latest'
     //   }
     // }
+    stage('Hello') {
+      steps{
+        script {
+          remote.user=env.PI_CREDS_USR
+          remote.password=env.PI_CREDS_USR
+        }
+        echo 'Hello, Jason!!'
+        sshCommand(remote: remote, command: 'ls -la')
+      }
+    }
   }
   post {
     always {
       sh 'docker logout'
+      sleep(5)
 //      cleanWs()  // Deletes all files in the workspace
     }
   }
