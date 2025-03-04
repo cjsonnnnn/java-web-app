@@ -43,8 +43,8 @@ pipeline {
           remote.user=env.PI_CREDS_USR
           remote.password=env.PI_CREDS_PSW
         }
-        sshCommand(remote: remote, command: "docker pull jpiay/jwa:latest")
-        sshCommand(remote: remote, command: "docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:latest")
+        sshCommand(remote: remote, command: "sudo docker pull jpiay/jwa:latest")
+        sshCommand(remote: remote, command: "sudo docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:latest")
       }
     }
   }
