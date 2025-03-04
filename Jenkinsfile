@@ -37,14 +37,14 @@ pipeline {
     //     sh 'docker push jpiay/jwa:latest'
     //   }
     // }
-    stage('Hello') {
+    stage('Pull and Deploy') {
       steps{
         script {
           remote.user=env.PI_CREDS_USR
           remote.password=env.PI_CREDS_PSW
         }
-        echo 'Hello, Jason!!'
-        sshCommand(remote: remote, command: "touch mima.txt")
+        sshCommand(remote: remote, command: "docker pull jpiay/jwa:latest")
+        sshCommand(remote: remote, command: "docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:latest")
       }
     }
   }
