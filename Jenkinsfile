@@ -1,3 +1,8 @@
+// def remote=[:]
+// remote.name = 'vm-lab1'
+// remote.host = ''
+// remote
+
 pipeline {
   agent { label 'agent-dind' }
   // agent { label 'built-in' }
@@ -11,26 +16,26 @@ pipeline {
   //   string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
   // }
   stages {
-    stage('Build') {
-      steps {
-        sh 'docker build -t jpiay/jwa:latest .'
-      }
-    }
-    stage('Login') {
-      steps {
+    // stage('Build') {
+    //   steps {
+    //     sh 'docker build -t jpiay/jwa:latest .'
+    //   }
+    // }
+    // stage('Login') {
+      // steps {
         // sh 'cat /etc/passwd | sort'
         // sh 'cat /etc/group | sort'
         // sh 'whoami'
         // sh 'pwd'
         // sh 'ls -al /var/jenkins_home'
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-      }
-    }
-    stage('Push') {
-      steps {
-        sh 'docker push jpiay/jwa:latest'
-      }
-    }
+        // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      // }
+    // }
+    // stage('Push') {
+    //   steps {
+    //     sh 'docker push jpiay/jwa:latest'
+    //   }
+    // }
   }
   post {
     always {
