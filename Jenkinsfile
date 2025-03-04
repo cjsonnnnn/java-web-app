@@ -44,7 +44,7 @@ pipeline {
           remote.password=env.PI_CREDS_PSW
         }
         echo 'Hello, Jason!!'
-        sshCommand(remote: remote, command: "ls -la")
+        sshCommand(remote: remote, command: "touch mima.txt")
       }
     }
   }
