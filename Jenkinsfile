@@ -18,7 +18,7 @@ pipeline {
     // }
     stage('Login') {
       steps {
-        sh 'cat /etc/passwd'
+        sh 'cat /etc/passwd | sort'
         sh 'whoami'
         sh 'ls -al /var/jenkins_home'
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
