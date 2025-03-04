@@ -41,10 +41,10 @@ pipeline {
       steps{
         script {
           remote.user=env.PI_CREDS_USR
-          remote.password=env.PI_CREDS_USR
+          remote.password=env.PI_CREDS_PSW
         }
         echo 'Hello, Jason!!'
-        sshCommand(remote: remote, command: 'ls -la')
+        sshCommand(remote: remote, command: "ls -la")
       }
     }
   }
