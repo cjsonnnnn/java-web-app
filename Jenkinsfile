@@ -11,26 +11,26 @@ pipeline {
   //   string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
   // }
   stages {
-    // stage('Build') {
-    //   steps {
-    //     sh 'docker build -t jpiay/jwa:latest .'
-    //   }
-    // }
+    stage('Build') {
+      steps {
+        sh 'docker build -t jpiay/jwa:latest .'
+      }
+    }
     stage('Login') {
       steps {
-        sh 'cat /etc/passwd | sort'
-        sh 'cat /etc/group | sort'
-        sh 'whoami'
-        sh 'pwd'
-        sh 'ls -al /var/jenkins_home'
+        // sh 'cat /etc/passwd | sort'
+        // sh 'cat /etc/group | sort'
+        // sh 'whoami'
+        // sh 'pwd'
+        // sh 'ls -al /var/jenkins_home'
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
       }
     }
-    // stage('Push') {
-    //   steps {
-    //     sh 'docker push jpiay/jwa:latest'
-    //   }
-    // }
+    stage('Push') {
+      steps {
+        sh 'docker push jpiay/jwa:latest'
+      }
+    }
   }
   post {
     always {
