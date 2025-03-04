@@ -21,6 +21,7 @@ pipeline {
         sh 'cat /etc/passwd | sort'
         sh 'cat /etc/group | sort'
         sh 'whoami'
+        sh 'pwd'
         sh 'ls -al /var/jenkins_home'
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
       }
