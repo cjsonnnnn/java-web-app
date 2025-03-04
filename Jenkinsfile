@@ -29,6 +29,7 @@ pipeline {
         // sh 'pwd'
         // sh 'ls -al /var/jenkins_home'
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+        sh 'ping 192.168.18.21'
       }
     }
     // stage('Push') {
