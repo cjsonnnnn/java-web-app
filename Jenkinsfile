@@ -4,7 +4,8 @@ remote.host = '192.168.18.21'
 remote.allowAnyHosts = true
 
 pipeline {
-  agent any
+  // agent any
+  agent { label 'agent-openjdk' }
   // agent { label 'agent-dind' }
   // agent { label 'built-in' }
   tools {
