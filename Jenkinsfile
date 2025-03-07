@@ -77,9 +77,11 @@ pipeline {
   }
   post {
     always {
-      sh 'docker logout'
-      sleep(5)
-      cleanWs()  // Deletes all files in the workspace
+      node {
+        sh 'docker logout'
+        sleep(5)
+        cleanWs()  // Deletes all files in the workspace
+      }
     }
   }
 }
