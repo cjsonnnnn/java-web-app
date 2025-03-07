@@ -75,13 +75,13 @@ pipeline {
         }
     }
   }
-  post {
-    always {
-      script {
-        sh 'docker logout'
-        sleep(5)
-        cleanWs()  // Deletes all files in the workspace
-      }
-    }
-  }
+  // post {
+  //   always {
+  //     script {
+  //       sh 'docker logout'
+  //       sleep(5)
+  //       cleanWs()  // Deletes all files in the workspace
+  //     }
+  //   }
+  // }
 }
