@@ -68,7 +68,7 @@ pipeline {
     //     jf 'rt u target/*.jar example-repo-local/'
     //   }
     // }
-    stage('Build Docker Image'){
+    stage('Docker: Build Image'){
       steps {
         sh 'ls -al'
         jf 'rt dl example-repo-local/target/demo-0.0.1-SNAPSHOT.jar'
@@ -77,31 +77,31 @@ pipeline {
         sh 'ls -al'
       }
     }
-    // stage('Login') {
-    //   steps {
-    //     sh 'cat /etc/passwd | sort'
-    //     sh 'cat /etc/group | sort'
-    //     sh 'whoami'
-    //     sh 'pwd'
-    //     sh 'ls -al /var/jenkins_home'
-    //     sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-    //   }
-    // }
-    // stage('Push') {
+    stage('Docker: Login') {
+      steps {
+        sh 'cat /etc/passwd | sort'
+        sh 'cat /etc/group | sort'
+        sh 'whoami'
+        sh 'pwd'
+        sh 'ls -al /var/jenkins_home'
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
+    }
+    // stage('Docker: Push to Registry') {
     //   steps {
     //     sh 'docker push jpiay/jwa:latest'
     //   }
     // }
-    // stage('Pull and Deploy') {
-    //   steps{
-    //     script {
-    //       remote.user=env.PI_CREDS_USR
-    //       remote.password=env.PI_CREDS_PSW
-    //     }
-    //     sshCommand(remote: remote, command: "sudo docker pull jpiay/jwa:latest")
-    //     sshCommand(remote: remote, command: "sudo docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:latest")
-    //   }
-    // }  
+    stage('Docker: Pull and Deploy') {
+      steps{
+        script {
+          remote.user=env.PI_CREDS_USR
+          remote.password=env.PI_CREDS_PSW
+        }
+        // sshCommand(remote: remote, command: "sudo docker pull jpiay/jwa:latest")
+        sshCommand(remote: remote, command: "sudo docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:latest")
+      }
+    }  
   }
   post {
     always {
