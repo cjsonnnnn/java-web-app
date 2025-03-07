@@ -71,7 +71,7 @@ pipeline {
     stage('Build Docker Image'){
       steps {
         sh 'ls -al'
-        jf 'rt dl target/demo-0.0.1-SNAPSHOT.jar --flat=true'
+        jf 'rt dl target/demo-0.0.1-SNAPSHOT.jar'
         sh 'ls -al'
         sh 'docker build -t jpiay/jwa:latest .'
         sh 'ls -al'
