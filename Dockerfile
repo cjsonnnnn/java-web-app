@@ -7,7 +7,6 @@ WORKDIR /app
 
 # Copy source code
 # COPY . .
-
 COPY target/demo-0.0.1-SNAPSHOT.jar app.jar
 
 # Build the application using Maven

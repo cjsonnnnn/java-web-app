@@ -4,11 +4,8 @@ remote.host = '192.168.18.21'
 remote.allowAnyHosts = true
 
 pipeline {
+  agent none
   // agent any
-  // agent { label 'agent-maven' }
-  // agent { label 'agent-jenkins' }
-  agent { label 'agent-dind' }
-  // agent { label 'built-in' }
   tools {
       jfrog 'jfrog-cli'
   }
@@ -19,95 +16,68 @@ pipeline {
     DOCKERHUB_CREDENTIALS = credentials('dockerhub-jpiay')
     PI_CREDS=credentials('ssh-vm-lab1')
   }
-  // parameters { 
-  //   string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
-  // }
   stages {
-    // stage('Preparation') {
-    //   steps {
-    //     sh 'apt update'
-    //     sh 'apt install tree'
-    //   }
-    // }
-    stage('Testing') {
+    stage('Artifactory') {
+        agent { label 'agent-maven' }
         steps {
-            // Show the installed version of JFrog CLI.
-            jf '-v'
-
-            // Show the configured JFrog Platform instances.
-            jf 'c show'
-
-            // Ping Artifactory.
-            jf 'rt ping'
-
-            // Create a file and upload it to a repository named 'example-repo-local' in Artifactory
-            sh 'touch test-file'
-            // jf 'rt u test-file example-repo-local/'
-
-            // Publish the build-info to Artifactory.
-            // jf 'rt bp'
-
-            // Download the test-file
-            // jf 'rt dl example-repo-local/test-file'
+            script {
+                node('agent-maven') { 
+                    stage('Build ') {
+                      steps {
+                        build
+                        sh 'docker build -t jpiay/jwa:latest .'
+                        sh 'mvn clean package'
+                      }
+                    }
+                    stage('Publish to Artifactory') {
+                      steps {
+                        jf 'rt bp'
+                        jf 'rt u target/*.jar example-repo-local/'
+                      }
+                    }
+                }
+            }
         }
     }
-    // stage('Build ') {
-    //   steps {
-        // build
-        // sh 'docker build -t jpiay/jwa:latest .'
-        // sh 'ls -al'
-        // sh 'mvn clean package'
-        // sh 'ls -al'
-        // sh 'ls -al target'
-    //   }
-    // }
-    // stage('Publish to Artifactory') {
-    //   steps {
-        // upload to Artifactory
-    //     jf 'rt bp'
-    //     jf 'rt u target/*.jar example-repo-local/'
-    //   }
-    // }
-    stage('Docker: Build Image'){
-      steps {
-        sh 'ls -al'
-        jf 'rt dl example-repo-local/target/demo-0.0.1-SNAPSHOT.jar'
-        sh 'ls -al'
-        sh 'docker build -t jpiay/jwa:0.0.1 .'
-        sh 'ls -al'
-        sh 'docker images'
-      }
-    }
-    stage('Docker: Login') {
-      steps {
-        sh 'cat /etc/passwd | sort'
-        sh 'cat /etc/group | sort'
-        sh 'whoami'
-        sh 'pwd'
-        sh 'ls -al /var/jenkins_home'
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-      }
-    }
-    stage('Docker: Push to Registry') {
-      steps {
-        sh 'docker push jpiay/jwa:0.0.1'
-      }
-    }
-    stage('Docker: Pull and Deploy') {
-      steps{
-        script {
-          remote.user=env.PI_CREDS_USR
-          remote.password=env.PI_CREDS_PSW
+    stage('Docker') {
+        agent { label 'agent-dind' }
+        steps {
+            script {
+                node('agent-dind') { 
+                    stage('Docker: Build Image'){
+                      steps {
+                        jf 'rt dl example-repo-local/target/demo-0.0.1-SNAPSHOT.jar'
+                        sh 'docker build -t jpiay/jwa:0.0.1 .'
+                      }
+                    }
+                    stage('Docker: Login') {
+                      steps {
+                        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                      }
+                    }
+                    stage('Docker: Push to Registry') {
+                      steps {
+                        sh 'docker push jpiay/jwa:0.0.1'
+                      }
+                    }
+                    stage('Docker: Pull and Deploy') {
+                      steps{
+                        script {
+                          remote.user=env.PI_CREDS_USR
+                          remote.password=env.PI_CREDS_PSW
+                        }
+                        sshCommand(remote: remote, command: "sudo docker pull jpiay/jwa:0.0.1")
+                        sshCommand(remote: remote, command: "sudo docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:0.0.1")
+                      }
+                    }  
+                }
+            }
         }
-        // sshCommand(remote: remote, command: "sudo docker pull jpiay/jwa:latest")
-        sshCommand(remote: remote, command: "sudo docker images")
-        sshCommand(remote: remote, command: "sudo docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:0.0.1")
-      }
-    }  
+    }
   }
   post {
     always {
-      // sh 'docker logout'
+      sh 'docker logout'
       sleep(5)
       cleanWs()  // Deletes all files in the workspace
     }
