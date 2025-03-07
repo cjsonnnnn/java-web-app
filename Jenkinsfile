@@ -39,7 +39,7 @@ pipeline {
             jf 'rt u test-file example-repo-local/'
 
             // Publish the build-info to Artifactory.
-            jf 'rt bp'
+            // jf 'rt bp'
 
             // Download the test-file
             jf 'rt dl example-repo-local/test-file'
@@ -47,12 +47,18 @@ pipeline {
     }
     stage('Build') {
       steps {
+        // build
         // sh 'docker build -t jpiay/jwa:latest .'
-        sh 'cat /etc/passwd | sort'
-        sh 'cat /etc/group | sort'
         sh 'ls -al'
         sh 'mvn clean package'
         sh 'ls -al'
+      }
+    }
+    stage('Publish to Artifactory') {
+      steps{
+        // upload to Artifactory
+        jf 'rt bp'
+        jf 'rt u target/*.jar example-repo-local/'
       }
     }
     // stage('Login') {
