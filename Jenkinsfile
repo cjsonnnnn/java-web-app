@@ -48,6 +48,8 @@ pipeline {
     stage('Build') {
       steps {
         // sh 'docker build -t jpiay/jwa:latest .'
+        sh 'cat /etc/passwd | sort'
+        sh 'cat /etc/group | sort'
         sh 'ls -al'
         sh 'mvn clean package'
         sh 'ls -al'
