@@ -5,8 +5,8 @@ remote.allowAnyHosts = true
 
 pipeline {
   // agent any
-  // agent { label 'agent-jnlp' }
-  agent { label 'agent-jenkins' }
+  agent { label 'agent-jnlp' }
+  // agent { label 'agent-jenkins' }
   // agent { label 'agent-dind' }
   // agent { label 'built-in' }
   tools {
@@ -77,7 +77,7 @@ pipeline {
     //     sshCommand(remote: remote, command: "sudo docker pull jpiay/jwa:latest")
     //     sshCommand(remote: remote, command: "sudo docker run -d --name java-web-app -p 8090:8080 --restart unless-stopped jpiay/jwa:latest")
     //   }
-    // }
+    // }  
   }
   post {
     always {
