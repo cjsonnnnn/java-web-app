@@ -4,8 +4,8 @@ remote.host = '192.168.18.21'
 remote.allowAnyHosts = true
 
 pipeline {
-  agent none
-  // agent any
+  // agent none
+  agent any
   tools {
       jfrog 'jfrog-cli'
   }
