@@ -23,6 +23,12 @@ pipeline {
   //   string(name: 'APP_NAME', defaultValue: '', description: 'What is the Heroku app name?') 
   // }
   stages {
+    // stage('Preparation') {
+    //   steps {
+    //     sh 'apt update'
+    //     sh 'apt install tree'
+    //   }
+    // }
     stage('Testing') {
         steps {
             // Show the installed version of JFrog CLI.
@@ -45,20 +51,30 @@ pipeline {
             jf 'rt dl example-repo-local/test-file'
         }
     }
-    stage('Build') {
+    stage('Build ') {
       steps {
         // build
         // sh 'docker build -t jpiay/jwa:latest .'
         sh 'ls -al'
         sh 'mvn clean package'
         sh 'ls -al'
+        sh 'ls -al target'
       }
     }
     stage('Publish to Artifactory') {
-      steps{
+      steps {
         // upload to Artifactory
         jf 'rt bp'
         jf 'rt u target/*.jar example-repo-local/'
+      }
+    }
+    stage('Build Docker Image'){
+      steps {
+        sh 'ls -al'
+        jf 'rt dl target/demo-0.0.1-SNAPSHOT.jar --flat=true'
+        sh 'ls -al'
+        sh 'docker build -t jpiay/jwa:latest .'
+        sh 'ls -al'
       }
     }
     // stage('Login') {
