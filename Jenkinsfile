@@ -77,7 +77,8 @@ pipeline {
   }
   post {
     always {
-      node {
+      agent any
+      steps {
         sh 'docker logout'
         sleep(5)
         cleanWs()  // Deletes all files in the workspace
