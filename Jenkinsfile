@@ -42,32 +42,32 @@ pipeline {
 
             // Create a file and upload it to a repository named 'example-repo-local' in Artifactory
             sh 'touch test-file'
-            jf 'rt u test-file example-repo-local/'
+            // jf 'rt u test-file example-repo-local/'
 
             // Publish the build-info to Artifactory.
             // jf 'rt bp'
 
             // Download the test-file
-            jf 'rt dl example-repo-local/test-file'
+            // jf 'rt dl example-repo-local/test-file'
         }
     }
-    stage('Build ') {
-      steps {
+    // stage('Build ') {
+    //   steps {
         // build
         // sh 'docker build -t jpiay/jwa:latest .'
-        sh 'ls -al'
-        sh 'mvn clean package'
-        sh 'ls -al'
-        sh 'ls -al target'
-      }
-    }
-    stage('Publish to Artifactory') {
-      steps {
+        // sh 'ls -al'
+        // sh 'mvn clean package'
+        // sh 'ls -al'
+        // sh 'ls -al target'
+    //   }
+    // }
+    // stage('Publish to Artifactory') {
+    //   steps {
         // upload to Artifactory
-        jf 'rt bp'
-        jf 'rt u target/*.jar example-repo-local/'
-      }
-    }
+    //     jf 'rt bp'
+    //     jf 'rt u target/*.jar example-repo-local/'
+    //   }
+    // }
     stage('Build Docker Image'){
       steps {
         sh 'ls -al'
