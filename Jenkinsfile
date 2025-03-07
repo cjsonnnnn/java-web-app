@@ -6,8 +6,8 @@ remote.allowAnyHosts = true
 pipeline {
   // agent any
   // agent { label 'agent-jnlp' }
-  // agent { label 'agent-jenkins' }
-  agent { label 'agent-dind' }
+  agent { label 'agent-jenkins' }
+  // agent { label 'agent-dind' }
   // agent { label 'built-in' }
   tools {
       jfrog 'jfrog-cli'
